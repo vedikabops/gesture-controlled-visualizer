@@ -5,6 +5,7 @@ import math
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from pythonosc.udp_client import SimpleUDPClient
+from pathlib import Path
 
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4),
@@ -26,7 +27,8 @@ client = SimpleUDPClient(
 )
 
 # load model
-base_options = python.BaseOptions(model_asset_path="models/hand_landmarker.task")
+model_path = Path(__file__).parent / "models" / "hand_landmarker.task"
+base_options = python.BaseOptions(model_asset_path=str(model_path))
 
 options = vision.HandLandmarkerOptions(base_options=base_options, num_hands=2, running_mode=vision.RunningMode.VIDEO)
 
