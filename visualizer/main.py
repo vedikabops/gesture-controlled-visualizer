@@ -10,7 +10,7 @@ class Visualizer(mglw.WindowConfig):
         if seed is not None:
             np.random.seed(seed)
         
-        self.targets = np.random.uniform(-self.cluster_radius, self.cluster_radius, (20, 3)).astype('f4')
+        self.targets = np.random.uniform(-self.cluster_radius, self.cluster_radius, (50, 3)).astype('f4')
 
 
     def __init__(self, **kwargs):
@@ -47,8 +47,8 @@ class Visualizer(mglw.WindowConfig):
         self.seed = 0
         self.last_seed = 0
         self.last_cluster_radius = self.cluster_radius
-        self.positions = np.random.uniform(-1.0, 1.0, (20, 3)).astype('f4')
-        self.move_speed = np.random.uniform(0.01, 0.03, 20).astype("f4")
+        self.positions = np.random.uniform(-1.0, 1.0, (50, 3)).astype('f4')
+        self.move_speed = np.random.uniform(0.01, 0.03, 50).astype("f4")
         self.generate_targets()
         self.particle_size = 100.0
         
@@ -167,7 +167,7 @@ class Visualizer(mglw.WindowConfig):
         self.prog["cube_height"] = self.cube_height
         self.instance_buffer.write(self.positions.astype('f4').tobytes())
         #self.vbo.write(self.positions.astype('f4').tobytes())
-        self.vao.render(mode=self.ctx.LINES, instances = 20)
+        self.vao.render(mode=self.ctx.LINES, instances = 50)
 
 
 if __name__ == "__main__":
