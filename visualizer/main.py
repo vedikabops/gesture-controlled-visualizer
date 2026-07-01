@@ -42,6 +42,8 @@ class Visualizer(mglw.WindowConfig):
         self.cube_scale = 0.3
         self.prev_height = 0.0
         self.cube_height = 0.2
+        self.prev_camera_angle = 0.0
+        self.camera_angle = 0.0
         self.seed = 0
         self.last_seed = 0
         self.last_cluster_radius = self.cluster_radius
@@ -105,18 +107,34 @@ class Visualizer(mglw.WindowConfig):
         self.positions += (self.targets - self.positions) * self.move_speed[:, None]
 
         radius = 3.0
-        camera_angle = 0.0
-        if self.receiver.left["pinch"]:
-            camera_angle = -np.radians(self.receiver.left["pinch_angle"])
 
-        cam_x =  np.sin(camera_angle) * radius
-        cam_z = np.cos(camera_angle) * radius
+        # the camera
+        current_angle = self.receiver.left["pinch_angle"] * np.pi / 180.0
+        delta_angle = current_angle - self.prev_camera_angle
+        noise_threshold = 0.01
+        transition_threshold = 0.2
+        if (self.receiver.left["pinch"] and abs(delta_angle) > noise_threshold and abs(delta_angle) < transition_threshold):
+            self.camera_angle += delta_angle * 5
+            
+        self.prev_camera_angle = current_angle
+        cam_x =  np.sin(self.camera_angle) * radius
+        cam_z = np.cos(self.camera_angle) * radius
 
         view = glm.lookAt(
             glm.vec3(cam_x, 0, cam_z),
             glm.vec3(0, 0, 0),
             glm.vec3(0, 1, 0)
         )
+
+        #seed
+        if self.receiver.right["pinch"]:
+            curr_angle = self.receiver.right["pinch_angle"]
+            curr_angle += 180.0
+            current_seed = int(curr_angle // 10)
+            if current_seed != self.last_seed:
+                self.seed = current_seed
+                self.generate_targets(seed=self.seed)
+                self.last_seed = current_seed
 
         # left hand
         current = self.receiver.right["pinch_distance"]
